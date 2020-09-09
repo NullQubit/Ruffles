@@ -21,7 +21,7 @@ namespace Ruffles.Core
     /// <summary>
     /// A dual IPv4 IPv6 socket using the Ruffles protocol.
     /// </summary>
-    public sealed class RuffleSocket
+    public sealed class RuffleSocket : ISocket
     {
         // Separate connections and pending to prevent something like a slorris attack
         private readonly Dictionary<IPEndPoint, Connection> _addressConnectionLookup = new Dictionary<IPEndPoint, Connection>();
@@ -54,7 +54,7 @@ namespace Ruffles.Core
         /// Gets a value indicating whether this <see cref="T:Ruffles.Core.RuffleSocket"/> is terminated.
         /// </summary>
         /// <value><c>true</c> if is terminated; otherwise, <c>false</c>.</value>
-        [Obsolete("Use IsIntiailized instead to determine whether this socket is terminated or not")]
+        [Obsolete("Use IsInitialized instead to determine whether this socket is terminated or not")]
         public bool IsTerminated => !IsInitialized;
         /// <summary>
         /// Gets a value indicating whether this <see cref="T:Ruffles.Core.RuffleSocket"/> is initialized.
@@ -646,7 +646,7 @@ namespace Ruffles.Core
         {
             if (payload.Count > Config.MinimumMTU)
             {
-                if (Logging.CurrentLogLevel <= LogLevel.Error)  Logging.LogError("Tried to send unconnected message that was too large. [Size=" + payload.Count + "] [MaxMessageSize=" + Config.MaxFragments + "]");
+                if (Logging.CurrentLogLevel <= LogLevel.Error) Logging.LogError("Tried to send unconnected message that was too large. [Size=" + payload.Count + "] [MaxMessageSize=" + Config.MaxFragments + "]");
                 return false;
             }
 
@@ -805,7 +805,7 @@ namespace Ruffles.Core
 
                     // Save for resends
                     connection.PreConnectionChallengeIV = iv;
-                    
+
                     // Write IV
                     for (byte i = 0; i < sizeof(ulong); i++) memory.Buffer[1 + Constants.RUFFLES_PROTOCOL_IDENTIFICATION.Length + (sizeof(ulong) * 2) + i] = ((byte)(iv >> (i * 8)));
 
